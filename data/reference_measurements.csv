@@ -1,0 +1,4 @@
+Job_ID,Date,Address,Estimated_SqFt,Actual_SqFt,Error_Pct,Confidence_Score,Photo_Quality,Pitch,Complexity,Product_Installed,Notes
+TEMPLATE_001,2024-01-15,1234 Example St,2400,2485,-3.4,88,Good,6/12,Moderate,Architectural,Two valleys standard hip roof
+TEMPLATE_002,2024-02-03,5678 Sample Ave,1680,1625,3.4,91,Excellent,5/12,Simple,3-Tab,Basic gable no complications
+TEMPLATE_003,2024-03-10,9012 Demo Ln,3200,3350,-4.5,82,Fair,8/12,Complex,Metal,Multiple dormers steep pitch

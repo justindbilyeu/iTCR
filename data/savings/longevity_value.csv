@@ -1,0 +1,4 @@
+Product_Type,Expected_Lifespan_Years,Replacement_Cost_Factor,Replacements_30yr,Total_30yr_Replacement_Cost,Notes
+Metal,50,0.00,0,0,No replacement needed in 30yr window
+Architectural,27,1.00,1,1.0x_original_cost,One replacement around year 27
+3-Tab,17,1.00,2,2.0x_original_cost,Replacements at years 17 and 34

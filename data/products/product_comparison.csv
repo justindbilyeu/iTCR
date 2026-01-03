@@ -1,0 +1,13 @@
+Feature,Metal_Roofing,Architectural_Shingles,3Tab_Shingles
+Lifespan_Years,50+,25-30,15-20
+Warranty_Years,40-50,30-50,20-25
+Hail_Rating,Class 4,Class 3-4 (select),Class 1-2
+Wind_Rating_MPH,140+,110-130,60-90
+Fire_Rating,Class A,Class A,Class A
+Insurance_Discount_Range,15-35%,5-15%,0-5%
+Energy_Efficiency,High (reflective),Medium,Low
+Maintenance_Required,Minimal,Low,Moderate
+Replacement_Frequency_30yr,0,1,2
+Cost_Per_SqFt_Installed,9-13,5-7,3.50-5
+Ideal_Customer,Long-term owner,Mid-budget quality,Budget-conscious
+Best_For,Hail zones premium homes,Standard upgrades,Rentals short-term

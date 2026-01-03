@@ -1,0 +1,11 @@
+Zip_Code,Metal_Discount_Low,Metal_Discount_High,Arch_Discount_Low,Arch_Discount_High,3Tab_Discount_Low,3Tab_Discount_High,Notes
+78701,20,30,8,12,0,3,Central Austin high-rise wind concerns
+78703,22,32,10,15,0,5,West Lake Hills hail frequency
+78704,18,28,7,12,0,3,South Austin standard
+78705,18,28,7,12,0,3,UT area
+78717,15,25,5,10,0,3,Northwest suburbs
+78730,20,30,10,15,0,5,Westlake premium
+78746,22,32,10,15,0,5,Westlake Hills
+78748,18,26,7,12,0,3,South Manchaca
+78759,18,28,8,13,0,3,Great Hills
+Default_Austin,18,28,7,12,0,3,Use for unlisted zips

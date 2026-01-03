@@ -1,0 +1,6 @@
+Zip_Code_Range,Market_Segment,Price_Multiplier,Notes
+78701-78710,Central Austin,1.08,Urban premium accessibility
+78711-78730,West Austin Westlake,1.15,High-end market premium materials
+78731-78750,North Austin,1.00,Standard market baseline
+78751-78760,East Austin,0.98,Emerging competitive
+78701-78799,Austin Metro Default,1.00,Use unless specific adjustment

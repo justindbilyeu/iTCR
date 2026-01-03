@@ -1,0 +1,8 @@
+Cost_Category,Type,Value,Application_Rule,Notes
+Overhead,Percentage,18,Applied to material + labor subtotal,Insurance licensing equipment
+Profit_Margin,Percentage,22,Applied after overhead,Standard residential margin
+Permit_Austin,Fixed,350,Per project,City of Austin standard fee
+Permit_Suburbs,Fixed,275,Per project,Surrounding municipalities
+Disposal_Fee,Per_Ton,75,Asphalt waste,Avg 0.5 tons per 1000sqft
+Metal_Disposal,Per_Ton,45,Metal recycling,Credit for scrap value
+Dumpster_Rental,Fixed,400,Per project,10-day rental included

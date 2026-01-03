@@ -1,0 +1,10 @@
+Product_Type,Color_Category,Cooling_Reduction_Low,Cooling_Reduction_High,Austin_Annual_Savings_Low,Austin_Annual_Savings_High,Notes
+Metal,Light (white/tan/silver),15,20,180,240,Reflective coating critical
+Metal,Medium (gray/bronze),10,15,120,180,Moderate reflection
+Metal,Dark (black/charcoal),5,10,60,120,Heat absorption higher
+Architectural,Light colors,7,12,85,145,Better than 3-tab
+Architectural,Medium colors,5,10,60,120,Standard performance
+Architectural,Dark colors,3,7,35,85,Minimal benefit
+3-Tab,Light colors,3,7,35,85,Limited reflectivity
+3-Tab,Medium colors,2,5,25,60,Standard absorption
+3-Tab,Dark colors,0,3,0,35,No significant benefit
