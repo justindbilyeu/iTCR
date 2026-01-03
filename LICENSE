@@ -1,0 +1,84 @@
+MIT License (Provisional)
+
+Copyright (c) 2026 Justin Bilyeu / Texas Choice Roofing
+
+PROVISIONAL LICENSE NOTICE:
+This repository is currently in development. License terms will be
+finalized after Phase 1 completion and validation testing.
+
+Options under consideration:
+1. MIT License (full open source)
+2. Dual License (commercial/non-commercial)
+3. Proprietary License (business use only)
+
+CURRENT TERMS (Provisional):
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software for REVIEW AND EVALUATION purposes only, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+RESTRICTIONS:
+- This Software is currently for INTERNAL REVIEW ONLY
+- Commercial use is NOT authorized under this provisional license
+- Redistribution requires explicit written permission
+- Production deployment requires licensing agreement with Texas Choice Roofing
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+FINAL LICENSE DECISION PENDING:
+
+After Phase 1 validation (estimated February 2026), this provisional license
+will be replaced with one of the following:
+
+OPTION 1: MIT License (Full Open Source)
+If choosing full open source, the standard MIT License will apply:
+- Free to use, modify, distribute
+- Commercial use permitted
+- Attribution required
+- No warranty
+
+OPTION 2: Dual License (Commercial + Non-Commercial)
+If choosing dual licensing:
+- Non-commercial use: Free under MIT-style terms
+- Commercial use: Requires licensing agreement and fees
+- Supports open community while enabling business model
+
+OPTION 3: Proprietary License (Business Use Only)
+If choosing proprietary:
+- Source code viewable for transparency
+- Use restricted to Texas Choice Roofing and licensed partners
+- No unauthorized commercial deployment
+- Supports exclusive competitive advantage
+
+---
+
+For licensing questions or commercial inquiries, contact:
+Justin Bilyeu
+Texas Choice Roofing
+Austin, Texas
+
+---
+
+Note on Data Files:
+All pricing data in the /data/ directory is provided as TEMPLATES for
+system architecture purposes. Actual Texas Choice Roofing pricing is
+proprietary and confidential. Template data is based on industry averages
+and public market information.
+
+---
+
+Last Updated: 2026-01-03
+Status: Provisional (Review pending)
+Expected Final License: February 2026
