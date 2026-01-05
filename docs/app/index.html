@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>iTCR Quote Engine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Texas Choice Roofing Quote Builder - Privacy-first, client-side quote generation.">
+<style>
+  /* ===== Enhanced Design System ===== */
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f8fafc;--ink:#0f172a;--muted:#64748b;
+    --card:#fff;--primary:#2563eb;--primary-dark:#1e40af;
+    --accent:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    --border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.1);
+    --shadow-lg:0 10px 25px rgba(0,0,0,.1)
+  }
+
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    line-height:1.6;color:var(--ink);background:var(--bg);margin:0;
+    min-height:100vh;display:flex;flex-direction:column
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%);
+    color:#fff;padding:2.5rem 1.5rem;position:relative;overflow:hidden
+  }
+  .hero::before{
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z' fill='%23fff' fill-opacity='.05'/%3E%3C/svg%3E");
+    opacity:.4
+  }
+  .hero-content{max-width:800px;margin:0 auto;position:relative;z-index:1;text-align:center}
+  .hero h1{font-size:clamp(1.75rem,4vw,2.5rem);margin-bottom:.75rem;font-weight:800;letter-spacing:-.025em}
+  .hero-subtitle{font-size:clamp(1rem,2vw,1.15rem);opacity:.95;margin-bottom:2rem}
+  .hero-stats{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:1rem;max-width:600px;margin:0 auto
+  }
+  .hero-stat{
+    text-align:center;padding:1rem;background:rgba(255,255,255,.1);
+    border-radius:12px;backdrop-filter:blur(10px)
+  }
+  .hero-stat-value{font-size:1.75rem;font-weight:800;display:block;line-height:1.2}
+  .hero-stat-label{font-size:.875rem;opacity:.9;margin-top:.25rem}
+
+  /* ===== Main Layout ===== */
+  .container{max-width:800px;margin:0 auto;padding:2rem 1.5rem;flex:1}
+
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;box-shadow:var(--shadow);padding:2.5rem
+  }
+
+  .section-title{
+    font-size:1.5rem;color:var(--primary-dark);margin-bottom:1.5rem;
+    font-weight:700;text-align:center
+  }
+
+  /* ===== JSON Import Panel ===== */
+  .json-import{
+    background:linear-gradient(135deg,#fef3c7,#fde68a);
+    border:1px solid #fbbf24;border-radius:12px;padding:1.5rem;margin-bottom:2rem
+  }
+  .json-import-title{
+    font-size:1rem;font-weight:700;color:#92400e;
+    margin-bottom:1rem;display:flex;align-items:center;gap:.5rem
+  }
+  .json-import textarea{
+    width:100%;min-height:100px;padding:0.75rem;
+    border:2px solid #fbbf24;border-radius:8px;font-family:monospace;
+    font-size:0.9rem;margin-bottom:0.75rem;background:#fff
+  }
+  .json-import-btns{display:flex;gap:0.75rem;flex-wrap:wrap}
+  .json-btn{
+    padding:0.625rem 1.25rem;background:#f59e0b;color:#fff;
+    border:none;border-radius:6px;font-weight:600;cursor:pointer;
+    font-size:0.875rem;transition:all .2s
+  }
+  .json-btn:hover{background:#d97706;transform:translateY(-1px)}
+  .json-btn.secondary{background:#e5e7eb;color:#374151}
+  .json-btn.secondary:hover{background:#d1d5db}
+  .json-error{
+    margin-top:0.75rem;padding:0.75rem;background:#fef2f2;
+    border:1px solid #fca5a5;border-radius:6px;color:#991b1b;
+    font-size:0.875rem;display:none
+  }
+
+  /* ===== Inputs ===== */
+  .input-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-bottom:2rem
+  }
+  @media (max-width:600px){.input-grid{grid-template-columns:1fr}}
+
+  .input-group{position:relative}
+  .input-group.full-width{grid-column:1/-1}
+
+  .input-label{
+    display:flex;align-items:center;gap:.5rem;font-weight:600;
+    color:var(--ink);margin-bottom:.5rem;font-size:.95rem
+  }
+  .required{color:var(--danger);font-weight:700}
+
+  .input-field{
+    width:100%;padding:.875rem 1rem;border:2px solid var(--border);
+    border-radius:8px;font-size:1rem;background:#fff;color:#111;
+    transition:border-color .2s
+  }
+  .input-field:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+  .input-help{font-size:.85rem;color:var(--muted);margin-top:.375rem}
+
+  @supports (-webkit-touch-callout:none){
+    .input-field{-webkit-text-fill-color:#111;-webkit-opacity:1}
+  }
+
+  .checkbox-group{
+    display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem
+  }
+  .checkbox-label{
+    display:flex;align-items:center;gap:0.5rem;font-weight:500;cursor:pointer
+  }
+  .checkbox-label input{width:18px;height:18px;cursor:pointer}
+
+  .generate-btn{
+    width:100%;background:linear-gradient(135deg,#10b981,#059669);
+    color:#fff;border:none;padding:1.25rem;border-radius:10px;
+    font-size:1.15rem;font-weight:700;cursor:pointer;transition:transform .2s;
+    box-shadow:0 4px 12px rgba(16,185,129,.3);display:flex;align-items:center;
+    justify-content:center;gap:.75rem
+  }
+  .generate-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(16,185,129,.4)}
+  .generate-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+  .info-box{
+    padding:1rem;border-radius:10px;margin:1.5rem 0 0;font-size:.875rem;
+    display:flex;align-items:start;gap:.75rem
+  }
+  .info-box-icon{font-size:1.25rem;line-height:1}
+  .info-box.privacy{background:#eff6ff;border:1px solid #93c5fd;color:#1e40af}
+  .info-box.version{background:#f0fdf4;border:1px solid #86efac;color:#166534}
+
+  .spinner{
+    display:inline-block;width:20px;height:20px;
+    border:3px solid #f3f3f3;border-top:3px solid #fff;
+    border-radius:50%;animation:spin 1s linear infinite
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ===== Quote Preview ===== */
+  .quote-preview{
+    display:none;margin-top:2rem;padding:2rem;
+    background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+    border:2px solid #10b981;border-radius:12px
+  }
+  .quote-preview h3{
+    font-size:1.3rem;color:#065f46;margin-bottom:1.5rem;text-align:center
+  }
+  .quote-field{
+    display:grid;grid-template-columns:200px 1fr;gap:0.75rem;
+    padding:0.75rem;border-bottom:1px solid #86efac
+  }
+  .quote-field:last-child{border-bottom:none}
+  .quote-field-label{font-weight:600;color:#065f46}
+  .quote-field-value{color:#166534}
+  .quote-note{
+    margin-top:1.5rem;padding:1rem;background:#fef3c7;
+    border:1px solid #fbbf24;border-radius:8px;font-size:0.875rem;color:#92400e
+  }
+
+  @media (max-width:768px){
+    .hero{padding:2rem 1rem}
+    .container{padding:1.5rem 1rem}
+    .card{padding:1.5rem}
+    .quote-field{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Texas Choice Roofing — Quote Builder</h1>
+    <p class="hero-subtitle">Generate transparent, multi-product roofing quotes with detailed breakdowns</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value">2–3</span>
+        <span class="hero-stat-label">Product Options</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">Ranges</span>
+        <span class="hero-stat-label">+ Assumptions</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">100%</span>
+        <span class="hero-stat-label">Private, Local-Only</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="card">
+    <h2 class="section-title">🔄 Import from GPT (Optional)</h2>
+
+    <div class="json-import">
+      <div class="json-import-title">📋 Paste JSON from iTCR GPT</div>
+      <textarea id="quoteJsonInput" placeholder='{"zip": "78703", "roof_area_mid": 2500, "complexity": "Moderate", ...}'></textarea>
+      <div class="json-import-btns">
+        <button id="loadJsonBtn" class="json-btn">Load JSON</button>
+        <label class="json-btn secondary" for="jsonFileInput">Upload JSON File</label>
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none">
+        <button id="clearJsonBtn" class="json-btn secondary">Clear</button>
+      </div>
+      <div id="jsonError" class="json-error"></div>
+    </div>
+
+    <h2 class="section-title">📊 Enter Property Information</h2>
+
+    <form id="quoteForm">
+      <div class="input-grid">
+        <div class="input-group">
+          <label class="input-label">ZIP Code <span class="required">*</span></label>
+          <input class="input-field" id="zipCode" name="zipCode" type="text" inputmode="numeric"
+                 maxlength="5" placeholder="78703" required>
+          <div class="input-help">Austin metro area ZIP code</div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Roof Area Mid (ft²) <span class="required">*</span></label>
+          <input class="input-field" id="roofAreaMid" name="roofAreaMid" type="number"
+                 placeholder="2500" min="500" max="20000" required>
+          <div class="input-help">Best estimate of roof surface area</div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Roof Area Low (ft²)</label>
+          <input class="input-field" id="roofAreaLow" name="roofAreaLow" type="number"
+                 placeholder="2300" min="500" max="20000">
+          <div class="input-help">Conservative estimate (optional)</div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Roof Area High (ft²)</label>
+          <input class="input-field" id="roofAreaHigh" name="roofAreaHigh" type="number"
+                 placeholder="2700" min="500" max="20000">
+          <div class="input-help">Maximum estimate (optional)</div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Complexity Level <span class="required">*</span></label>
+          <select id="complexity" name="complexity" class="input-field" required>
+            <option value="">Select complexity...</option>
+            <option value="Simple">Simple - Basic gable, 0-1 valleys</option>
+            <option value="Moderate">Moderate - Standard residential, 2-3 valleys</option>
+            <option value="Complex">Complex - Multiple dormers, 4-6 valleys</option>
+            <option value="Premium">Premium - Extreme pitch, 7+ valleys</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Story Count <span class="required">*</span></label>
+          <select id="storyCount" name="storyCount" class="input-field" required>
+            <option value="">Select stories...</option>
+            <option value="1">1 Story</option>
+            <option value="2">2 Stories</option>
+            <option value="3+">3+ Stories</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Current Roof Type</label>
+          <select id="currentRoof" name="currentRoof" class="input-field">
+            <option value="asphalt">Asphalt Shingles</option>
+            <option value="metal">Metal</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Tear-off Type</label>
+          <select id="tearOffType" name="tearOffType" class="input-field">
+            <option value="asphalt">Asphalt</option>
+            <option value="metal">Metal</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Austin City Limits?</label>
+          <select id="austinCityLimits" name="austinCityLimits" class="input-field">
+            <option value="unknown">Unknown</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          <div class="input-help">Affects permit costs</div>
+        </div>
+
+        <div class="input-group full-width">
+          <label class="input-label">Desired Product Options <span class="required">*</span></label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="optMetal" name="optMetal" value="metal">
+              Class 4 Metal Roofing (Standing Seam)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="optArch" name="optArch" value="architectural" checked>
+              Architectural Shingles
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="opt3Tab" name="opt3Tab" value="3tab">
+              3-Tab Shingles (Budget)
+            </label>
+          </div>
+          <div class="input-help">Select at least one product to quote</div>
+        </div>
+      </div>
+
+      <button id="generateBtn" class="generate-btn" type="submit">
+        Generate Quote →
+      </button>
+
+      <div id="quotePreview" class="quote-preview">
+        <h3>📋 Draft Quote Preview</h3>
+        <div id="quoteFields"></div>
+        <div class="quote-note">
+          <strong>⚠️ Note:</strong> Totals not computed yet (pricing data pack not loaded).
+          This preview shows captured inputs only. Phase A will add deterministic pricing engine.
+        </div>
+      </div>
+
+      <div class="info-box privacy">
+        <span class="info-box-icon">🔒</span>
+        <div>
+          <strong>Your Privacy:</strong> All calculations happen in your browser.
+          No data is sent to servers or stored remotely.
+        </div>
+      </div>
+
+      <div class="info-box version">
+        <span class="info-box-icon">📦</span>
+        <div id="dataPackInfo">
+          <strong>Data Pack:</strong> <span id="dataPackVersion">Loading...</span>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ===== JSON Import Functionality =====
+function loadJsonData() {
+  const jsonText = $('quoteJsonInput').value.trim();
+  const errorEl = $('jsonError');
+
+  if (!jsonText) {
+    errorEl.textContent = 'Please paste JSON data first';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const data = JSON.parse(jsonText);
+
+    // Map JSON keys to form fields
+    const fieldMap = {
+      'zip': 'zipCode',
+      'zipCode': 'zipCode',
+      'roof_area_mid': 'roofAreaMid',
+      'roofAreaMid': 'roofAreaMid',
+      'roof_area_low': 'roofAreaLow',
+      'roofAreaLow': 'roofAreaLow',
+      'roof_area_high': 'roofAreaHigh',
+      'roofAreaHigh': 'roofAreaHigh',
+      'complexity': 'complexity',
+      'storyCount': 'storyCount',
+      'story_count': 'storyCount',
+      'currentRoof': 'currentRoof',
+      'current_roof': 'currentRoof',
+      'tearOffType': 'tearOffType',
+      'tear_off_type': 'tearOffType',
+      'austinCityLimits': 'austinCityLimits',
+      'austin_city_limits': 'austinCityLimits'
+    };
+
+    let fieldsPopulated = 0;
+    Object.keys(data).forEach(key => {
+      const fieldId = fieldMap[key];
+      const el = $(fieldId);
+      if (el && data[key] != null) {
+        el.value = data[key];
+        fieldsPopulated++;
+      }
+    });
+
+    // Handle product options (checkboxes)
+    if (data.products || data.selected_products) {
+      const products = data.products || data.selected_products;
+      $('optMetal').checked = products.includes('metal') || products.includes('Metal');
+      $('optArch').checked = products.includes('architectural') || products.includes('Architectural');
+      $('opt3Tab').checked = products.includes('3tab') || products.includes('3-tab') || products.includes('3Tab');
+    }
+
+    errorEl.style.display = 'none';
+    alert(`✓ Loaded ${fieldsPopulated} field(s) from JSON`);
+
+  } catch (e) {
+    errorEl.textContent = `JSON Parse Error: ${e.message}`;
+    errorEl.style.display = 'block';
+  }
+}
+
+function loadJsonFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    $('quoteJsonInput').value = e.target.result;
+    loadJsonData();
+  };
+  reader.readAsText(file);
+}
+
+$('loadJsonBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  loadJsonData();
+});
+
+$('jsonFileInput').addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    loadJsonFile(e.target.files[0]);
+  }
+});
+
+$('clearJsonBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  $('quoteJsonInput').value = '';
+  $('jsonError').style.display = 'none';
+});
+
+// ===== Quote Generation (Stub) =====
+function buildQuoteDraft() {
+  const zip = $('zipCode').value;
+  const roofAreaMid = parseFloat($('roofAreaMid').value) || 0;
+  const roofAreaLow = parseFloat($('roofAreaLow').value) || null;
+  const roofAreaHigh = parseFloat($('roofAreaHigh').value) || null;
+  const complexity = $('complexity').value;
+  const storyCount = $('storyCount').value;
+  const currentRoof = $('currentRoof').value;
+  const tearOffType = $('tearOffType').value;
+  const austinCityLimits = $('austinCityLimits').value;
+
+  const selectedProducts = [];
+  if ($('optMetal').checked) selectedProducts.push('Metal');
+  if ($('optArch').checked) selectedProducts.push('Architectural');
+  if ($('opt3Tab').checked) selectedProducts.push('3-Tab');
+
+  return {
+    zip,
+    roof_area_mid: roofAreaMid,
+    roof_area_low: roofAreaLow,
+    roof_area_high: roofAreaHigh,
+    complexity,
+    story_count: storyCount,
+    current_roof: currentRoof,
+    tear_off_type: tearOffType,
+    austin_city_limits: austinCityLimits,
+    products: selectedProducts,
+    totals: null,
+    notes: 'Pricing data pack not loaded'
+  };
+}
+
+function displayQuotePreview(draft) {
+  const fieldsHtml = `
+    <div class="quote-field">
+      <div class="quote-field-label">ZIP Code:</div>
+      <div class="quote-field-value">${draft.zip || 'N/A'}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Roof Area (Mid):</div>
+      <div class="quote-field-value">${draft.roof_area_mid} ft²</div>
+    </div>
+    ${draft.roof_area_low ? `<div class="quote-field">
+      <div class="quote-field-label">Roof Area (Low):</div>
+      <div class="quote-field-value">${draft.roof_area_low} ft²</div>
+    </div>` : ''}
+    ${draft.roof_area_high ? `<div class="quote-field">
+      <div class="quote-field-label">Roof Area (High):</div>
+      <div class="quote-field-value">${draft.roof_area_high} ft²</div>
+    </div>` : ''}
+    <div class="quote-field">
+      <div class="quote-field-label">Complexity:</div>
+      <div class="quote-field-value">${draft.complexity}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Story Count:</div>
+      <div class="quote-field-value">${draft.story_count}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Current Roof:</div>
+      <div class="quote-field-value">${draft.current_roof}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Selected Products:</div>
+      <div class="quote-field-value">${draft.products.join(', ') || 'None selected'}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Austin City Limits:</div>
+      <div class="quote-field-value">${draft.austin_city_limits}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Totals:</div>
+      <div class="quote-field-value">Not computed yet</div>
+    </div>
+  `;
+
+  $('quoteFields').innerHTML = fieldsHtml;
+  $('quotePreview').style.display = 'block';
+  $('quotePreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Form submission
+$('quoteForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const btn = $('generateBtn');
+  const form = e.target;
+
+  // Validate form
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // Validate at least one product selected
+  const hasProduct = $('optMetal').checked || $('optArch').checked || $('opt3Tab').checked;
+  if (!hasProduct) {
+    alert('Please select at least one product option');
+    return;
+  }
+
+  // Show loading state
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+  setTimeout(() => {
+    const draft = buildQuoteDraft();
+    displayQuotePreview(draft);
+
+    // Reset button
+    btn.disabled = false;
+    btn.innerHTML = 'Generate Quote →';
+  }, 750);
+});
+
+// ===== Data Pack Version Loader =====
+async function loadDataPackVersion() {
+  try {
+    const response = await fetch('../data/data_pack_version.json');
+    if (!response.ok) throw new Error('Not found');
+
+    const data = await response.json();
+    $('dataPackVersion').textContent = `${data.id || 'unknown'} (${data.generated_at || 'never'})`;
+  } catch (e) {
+    $('dataPackVersion').textContent = 'dev (Data pack unavailable)';
+  }
+}
+
+// Ensure input fields are visible (fix for iOS dark mode)
+document.querySelectorAll('input, select, textarea').forEach(el => {
+  el.style.background = '#fff';
+  el.style.color = '#111';
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadDataPackVersion();
+});
+</script>
+
+</body>
+</html>
