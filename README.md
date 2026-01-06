@@ -196,6 +196,11 @@ See `docs/07-integration-map.md` for integration details.
 | `docs/06-product-catalog.md` | Product specifications and comparisons |
 | `docs/07-integration-map.md` | External system connections |
 
+## Policies
+
+- [Quote Validity & Privacy](docs/policies/QUOTE_VALIDITY_AND_PRIVACY.md)
+- [PDF Footer Language](docs/policies/PDF_FOOTER_LANGUAGE.md)
+
 ---
 
 ## Data Files
