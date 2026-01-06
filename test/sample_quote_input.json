@@ -1,0 +1,35 @@
+{
+  "schema_version": "itcr.quote_input.v0.2",
+  "property": {
+    "zip_code": "78704",
+    "property_label": "Test Property Alpha",
+    "austin_city_limits": "Yes",
+    "stories": 2
+  },
+  "current_roof": {
+    "type": "3Tab",
+    "tear_off_layers": 1
+  },
+  "quote_options": {
+    "products_requested": ["Metal", "Architectural"],
+    "customer_priority": "BestLongTerm"
+  },
+  "roof_area": {
+    "source": "EstimatorNotes",
+    "sqft_low": 2350,
+    "sqft_mid": 2450,
+    "sqft_high": 2550
+  },
+  "roof_characteristics": {
+    "pitch_class": "Medium",
+    "complexity_level": "Moderate",
+    "waste_factor_hint": { "percentage": 12 }
+  },
+  "labor_adjustment": {
+    "difficulty_multiplier": 1.15
+  },
+  "notes": "Customer mentioned via email john.smith@example.com and phone 512-555-1234",
+  "quality_gates": {
+    "provisional_ok": true
+  }
+}

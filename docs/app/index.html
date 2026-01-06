@@ -5,6 +5,7 @@
 <title>iTCR Quote Engine</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Texas Choice Roofing Quote Builder - Privacy-first, client-side quote generation.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   /* ===== Enhanced Design System ===== */
   *{margin:0;padding:0;box-sizing:border-box}
@@ -329,6 +330,9 @@
           <strong>⚠️ Note:</strong> Totals not computed yet (pricing data pack not loaded).
           This preview shows captured inputs only. Phase A will add deterministic pricing engine.
         </div>
+        <button id="downloadPdfBtn" class="generate-btn" style="margin-top: 1.5rem;">
+          Download PDF Quote →
+        </button>
       </div>
 
       <div class="info-box privacy">
@@ -349,7 +353,10 @@
   </div>
 </main>
 
-<script>
+<script type="module">
+import { generateValidityMetadata } from '../js/utils/dates.js';
+import { sanitizePII } from '../js/utils/sanitize.js';
+
 const $ = id => document.getElementById(id);
 
 // ===== JSON Import Functionality =====
@@ -457,6 +464,12 @@ function buildQuoteDraft() {
   if ($('optArch').checked) selectedProducts.push('Architectural');
   if ($('opt3Tab').checked) selectedProducts.push('3-Tab');
 
+  // Generate validity metadata
+  const validityMeta = generateValidityMetadata();
+
+  // Sanitize notes if present (placeholder for future notes field)
+  const notes = 'Pricing data pack not loaded';
+
   return {
     zip,
     roof_area_mid: roofAreaMid,
@@ -469,7 +482,8 @@ function buildQuoteDraft() {
     austin_city_limits: austinCityLimits,
     products: selectedProducts,
     totals: null,
-    notes: 'Pricing data pack not loaded'
+    notes: sanitizePII(notes),
+    metadata: validityMeta
   };
 }
 
@@ -515,11 +529,120 @@ function displayQuotePreview(draft) {
       <div class="quote-field-label">Totals:</div>
       <div class="quote-field-value">Not computed yet</div>
     </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Created At:</div>
+      <div class="quote-field-value">${draft.metadata.created_at}</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Valid Until:</div>
+      <div class="quote-field-value">${draft.metadata.valid_until} (7 business days)</div>
+    </div>
+    <div class="quote-field">
+      <div class="quote-field-label">Disclaimer Version:</div>
+      <div class="quote-field-value">${draft.metadata.quote_disclaimer_version}</div>
+    </div>
   `;
 
   $('quoteFields').innerHTML = fieldsHtml;
   $('quotePreview').style.display = 'block';
   $('quotePreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===== PDF Generation =====
+let currentQuote = null; // Store current quote for PDF generation
+
+function generatePDF(quote) {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  const pageWidth = pdf.internal.pageSize.width;
+  const pageHeight = pdf.internal.pageSize.height;
+  const margin = 20;
+  let y = 20;
+
+  // Title
+  pdf.setFontSize(20);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('Texas Choice Roofing - Quote', margin, y);
+  y += 15;
+
+  // Property Information
+  pdf.setFontSize(14);
+  pdf.text('Property Information', margin, y);
+  y += 8;
+
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text(`ZIP Code: ${quote.zip}`, margin, y);
+  y += 6;
+  pdf.text(`Roof Area (Mid): ${quote.roof_area_mid} ft²`, margin, y);
+  y += 6;
+  if (quote.roof_area_low) {
+    pdf.text(`Roof Area (Low): ${quote.roof_area_low} ft²`, margin, y);
+    y += 6;
+  }
+  if (quote.roof_area_high) {
+    pdf.text(`Roof Area (High): ${quote.roof_area_high} ft²`, margin, y);
+    y += 6;
+  }
+  pdf.text(`Complexity: ${quote.complexity}`, margin, y);
+  y += 6;
+  pdf.text(`Story Count: ${quote.story_count}`, margin, y);
+  y += 6;
+  pdf.text(`Current Roof: ${quote.current_roof}`, margin, y);
+  y += 6;
+  pdf.text(`Austin City Limits: ${quote.austin_city_limits}`, margin, y);
+  y += 12;
+
+  // Products
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('Selected Products', margin, y);
+  y += 8;
+
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text(quote.products.join(', '), margin, y);
+  y += 12;
+
+  // Pricing (placeholder)
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('Pricing', margin, y);
+  y += 8;
+
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text('Totals not computed yet (pricing data pack not loaded)', margin, y);
+  y += 12;
+
+  // Validity Information
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('Validity Information', margin, y);
+  y += 8;
+
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text(`Created: ${quote.metadata.created_at}`, margin, y);
+  y += 6;
+  pdf.text(`Valid Until: ${quote.metadata.valid_until} (7 business days)`, margin, y);
+  y += 6;
+  pdf.text(`Version: ${quote.metadata.quote_disclaimer_version}`, margin, y);
+
+  // Footer with validity language
+  const footerY = pageHeight - 35;
+  pdf.setFontSize(8);
+  pdf.setFont(undefined, 'normal');
+  pdf.text(`Estimate generated: ${quote.metadata.created_at}`, margin, footerY);
+  pdf.text(`Valid until: ${quote.metadata.valid_until} (7 business days)`, margin, footerY + 4);
+  pdf.text(`Disclaimer: Estimate based on available inputs. Final price subject to on-site verification.`, margin, footerY + 8);
+  pdf.text(`Privacy: No customer contact information required to view this quote.`, margin, footerY + 12);
+  pdf.text(`Version: ${quote.metadata.quote_disclaimer_version}`, margin, footerY + 16);
+
+  // Download
+  const filename = `iTCR_Quote_${quote.zip}_${Date.now()}.pdf`;
+  pdf.save(filename);
 }
 
 // Form submission
@@ -548,12 +671,23 @@ $('quoteForm').addEventListener('submit', (e) => {
 
   setTimeout(() => {
     const draft = buildQuoteDraft();
+    currentQuote = draft; // Store for PDF generation
     displayQuotePreview(draft);
 
     // Reset button
     btn.disabled = false;
     btn.innerHTML = 'Generate Quote →';
   }, 750);
+});
+
+// PDF Download Button
+$('downloadPdfBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (currentQuote) {
+    generatePDF(currentQuote);
+  } else {
+    alert('Please generate a quote first');
+  }
 });
 
 // ===== Data Pack Version Loader =====

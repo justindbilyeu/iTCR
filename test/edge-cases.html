@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>iTCR Date Utility Tests</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      color: #1e40af;
+    }
+    .test-result {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+    }
+    .pass {
+      border: 2px solid #10b981;
+      background: #f0fdf4;
+    }
+    .fail {
+      border: 2px solid #ef4444;
+      background: #fef2f2;
+    }
+    .test-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .test-detail {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0.25rem 0;
+    }
+    .summary {
+      margin: 2rem 0 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .all-pass {
+      background: #10b981;
+      color: white;
+    }
+    .some-fail {
+      background: #ef4444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Date Utility Edge Case Tests</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    import { addBusinessDays, toISOWithTZ, generateValidityMetadata } from '../docs/js/utils/dates.js';
+
+    const results = [];
+
+    // Test 1: Normal case (Monday + 7 business days = next Wednesday)
+    try {
+      const monday = new Date('2026-01-05'); // Monday
+      const result = addBusinessDays(monday, 7);
+      const expected = '2026-01-14'; // Next Wednesday
+      results.push({
+        test: 'Normal week',
+        pass: result.toISOString().startsWith(expected),
+        result: result.toISOString(),
+        expected
+      });
+    } catch (e) {
+      results.push({ test: 'Normal week', pass: false, error: e.message });
+    }
+
+    // Test 2: Year boundary (Dec 30 + 7 business days = Jan 9)
+    try {
+      const dec30 = new Date('2025-12-30'); // Tuesday
+      const result = addBusinessDays(dec30, 7);
+      const expected = '2026-01-09'; // Friday
+      results.push({
+        test: 'Year boundary',
+        pass: result.toISOString().startsWith(expected),
+        result: result.toISOString(),
+        expected
+      });
+    } catch (e) {
+      results.push({ test: 'Year boundary', pass: false, error: e.message });
+    }
+
+    // Test 3: Invalid input (should throw)
+    try {
+      addBusinessDays('not a date', 7);
+      results.push({ test: 'Invalid date input', pass: false, error: 'Should have thrown' });
+    } catch (e) {
+      results.push({ test: 'Invalid date input', pass: true, error: e.message });
+    }
+
+    // Test 4: Negative business days (should throw)
+    try {
+      addBusinessDays(new Date(), -5);
+      results.push({ test: 'Negative days', pass: false, error: 'Should have thrown' });
+    } catch (e) {
+      results.push({ test: 'Negative days', pass: true, error: e.message });
+    }
+
+    // Test 5: Timezone formatting
+    try {
+      const testDate = new Date('2026-01-03T14:22:35Z');
+      const iso = toISOWithTZ(testDate);
+      const hasTimezone = /[+-]\d{2}:\d{2}$/.test(iso);
+      results.push({
+        test: 'Timezone format',
+        pass: hasTimezone,
+        result: iso
+      });
+    } catch (e) {
+      results.push({ test: 'Timezone format', pass: false, error: e.message });
+    }
+
+    // Test 6: Full metadata generation
+    try {
+      const meta = generateValidityMetadata();
+      const hasAllFields = meta.created_at && meta.valid_until &&
+                          meta.validity_business_days === 7 &&
+                          meta.quote_disclaimer_version === 'policies.v1';
+      results.push({
+        test: 'Metadata generation',
+        pass: hasAllFields,
+        result: JSON.stringify(meta, null, 2)
+      });
+    } catch (e) {
+      results.push({ test: 'Metadata generation', pass: false, error: e.message });
+    }
+
+    // Render results
+    const resultsDiv = document.getElementById('results');
+    results.forEach(r => {
+      const div = document.createElement('div');
+      div.className = `test-result ${r.pass ? 'pass' : 'fail'}`;
+
+      let html = `<div class="test-title">${r.test}: ${r.pass ? '✅ PASS' : '❌ FAIL'}</div>`;
+      if (r.result) html += `<div class="test-detail"><strong>Result:</strong> ${r.result}</div>`;
+      if (r.expected) html += `<div class="test-detail"><strong>Expected:</strong> ${r.expected}</div>`;
+      if (r.error) html += `<div class="test-detail"><strong>Details:</strong> ${r.error}</div>`;
+
+      div.innerHTML = html;
+      resultsDiv.appendChild(div);
+    });
+
+    // Summary
+    const passed = results.filter(r => r.pass).length;
+    const summary = document.createElement('div');
+    summary.className = `summary ${passed === results.length ? 'all-pass' : 'some-fail'}`;
+    summary.textContent = `${passed}/${results.length} tests passed`;
+    resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+  </script>
+</body>
+</html>
